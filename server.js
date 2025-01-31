@@ -3,8 +3,8 @@ import connectDB from './src/config/db.config.js';
 import bodyParser from 'body-parser';
 import sectionRouter from './src/features/sections/section.routes.js';
 import taskRouter from './src/features/tasks/task.routes.js';
-import jwtAuth from './src/middlewares/jwt.middleware.js';
 import userRouter from './src/features/user/user.routes.js';
+import cors from "cors";
 
 const app = express();
 
@@ -28,3 +28,15 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+const allowedOrigins = ["https://kanban-s.netlify.app"];  
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],  
+  credentials: true,  
+}));
+
+app.options("*", cors());  
+
