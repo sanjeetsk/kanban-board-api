@@ -12,8 +12,8 @@ const app = express();
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api/section',jwtAuth,  sectionRouter);
-app.use('/api/task', jwtAuth, taskRouter);
+app.use('/api/section',  sectionRouter);
+app.use('/api/task', taskRouter);
 app.use('/api/auth', userRouter);
 
 // Connect to database
