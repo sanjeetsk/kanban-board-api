@@ -1,5 +1,6 @@
 
 import mongoose from 'mongoose';
+import Section from '../sections/section.model.js';
 
 const taskSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -13,8 +14,17 @@ const Task = mongoose.model('Task', taskSchema);
 
 export default class TaskModel {
 
-    static async addTask(taskData) {
-        return await Task.create(taskData);
+    static async addTask({ name, description, dueDate, assignee, section }) {
+        // Check if the section exists and get its ObjectId
+        const sectionDoc = await Section.findOne({ name: section });
+        
+        if (!sectionDoc) {
+            return res.status(400).json({ message: "Invalid section name" });
+        }
+
+        const newTask = new Task({ name, description, dueDate, assignee, section: sectionDoc._id });
+
+        return await Task.create(newTask);
     }
 
     static async getTasksBySection(section) {

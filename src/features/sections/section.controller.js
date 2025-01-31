@@ -1,35 +1,3 @@
-// import SectionModel from "./section.model.js";
-
-// export default class SectionController {
-
-//     async getSections(req, res) {
-//         const sections = await SectionModel.getSections();
-//         res.status(200).send(sections);
-//     }
-
-//     async addSection(req, res) {
-//         const section = req.body;
-//         try{
-//             await SectionModel.addSection(section);
-//             res.status(201).send('Section added successfully');
-//         }
-//         catch(err){
-//             res.status(400).send('Error in adding section');
-//         }
-//     }
-
-//     async updateSection(req, res) {
-
-//     }
-
-//     async deleteSection(req, res) {
-
-//     }
-
-//     async getOneSection(req, res) {
-
-//     }
-// }
 
 import Section from './section.model.js';
 
