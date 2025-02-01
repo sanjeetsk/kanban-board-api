@@ -8,7 +8,7 @@ import cors from "cors";
 
 const app = express();
 
-const allowedOrigins = ["https://kanban-s.netlify.app"];  
+const allowedOrigins = ["https://kanban-s.netlify.app", "http://localhost:3000"];  
 
 app.use(cors({
   origin: allowedOrigins,
