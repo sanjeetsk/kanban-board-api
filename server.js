@@ -8,6 +8,16 @@ import cors from "cors";
 
 const app = express();
 
+const allowedOrigins = ["https://kanban-s.netlify.app"];  
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],  
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,  
+}));
+
+
 // Middleware
 app.use(bodyParser.json());
 
@@ -30,13 +40,5 @@ app.listen(port, () => {
 });
 
 
-const allowedOrigins = ["https://kanban-s.netlify.app"];  
-
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "DELETE"],  
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,  
-}));
 
 
