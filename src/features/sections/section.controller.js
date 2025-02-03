@@ -34,6 +34,18 @@ class SectionController {
             res.status(500).json({ message: 'Error deleting section', error });
         }
     }
+
+    //Update section
+    async updateSection(req, res) {
+        try {
+            const { id } = req.params;
+            const { name } = req.body;
+            const updatedSection = await Section.findByIdAndUpdate(id, { name }, { new: true });
+            res.status(200).json(updatedSection);
+        } catch (error) {
+            res.status(500).json({ message: 'Error updating section', error });
+        }
+    }
 }
 
 export default new SectionController();

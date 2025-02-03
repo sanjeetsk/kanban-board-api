@@ -22,7 +22,7 @@ export default class UserModel {
         const user = await User.findOne({ email });
         if(!user) return null;
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = bcrypt.compare(password, user.password);
         return isMatch ? user : null;
     }
 
