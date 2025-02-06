@@ -9,6 +9,6 @@ taskRoute.get('/:section', taskController.getTasks);
 taskRoute.post('/', taskController.addTask);
 taskRoute.put('/:taskId', taskController.updateTask);
 taskRoute.delete('/:taskId', taskController.deleteTask);
-taskRoute.put('/:taskId/move', taskController.moveTask);
+taskRoute.patch('/move', taskController.moveTask);
 
 export default taskRoute;

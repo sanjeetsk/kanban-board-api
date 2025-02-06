@@ -17,21 +17,21 @@ export default class TaskModel {
     static async addTask({ name, description, dueDate, assignee, section }) {
         try {
             const sectionDoc = await Section.findById(section);
-    
+
             if (!sectionDoc) {
                 throw new Error("Section does not exist");
             }
-    
+
             // If no valid user, set assignee to null
             const assigneeId = assignee && mongoose.Types.ObjectId.isValid(assignee) ? assignee : null;
-    
+
             const newTask = new Task({ name, description, dueDate, assignee: assigneeId, section: sectionDoc._id });
 
             // Add the new task to the corresponding section
             sectionDoc.tasks.push(newTask._id);
 
             await sectionDoc.save(); // Save the updated section
-    
+
             return await newTask.save();
         } catch (error) {
             throw new Error(error.message);
@@ -50,8 +50,39 @@ export default class TaskModel {
         return await Task.findByIdAndDelete(id);
     }
 
-    static async moveTask(taskId, newSection) {
-        return await Task.findByIdAndUpdate(taskId, { section: newSection }, { new: true });
+    static async moveTask(taskId, sourceSectionId, destinationSectionId) {
+        try {
+            // 1. Find source and destination sections
+            const sourceSection = await Section.findById(sourceSectionId);
+            const destinationSection = await Section.findById(destinationSectionId);
+            if (!sourceSection || !destinationSection) {
+                throw new Error('Source or Destination section not found');
+            }
+    
+            // 2. Find the task
+            const task = await Task.findById(taskId);
+            if (!task) {
+                throw new Error('Task not found');
+            }
+    
+            // 3. Remove task from the source section
+            sourceSection.tasks = sourceSection.tasks.filter(id => id.toString() !== taskId.toString());
+            await sourceSection.save();
+    
+            // 4. Move task to new section
+            task.section = destinationSectionId;
+            await task.save();
+    
+            // 5. Add task to the destination section (Only push once)
+            destinationSection.tasks.push(task._id);
+            await destinationSection.save();
+    
+            // 6. Return the updated task with populated data
+            return await Task.findById(taskId).populate("section");
+        } catch (err) {
+            throw new Error(err.message);
+        }
     }
+    
 }
 

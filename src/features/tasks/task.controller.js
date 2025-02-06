@@ -48,11 +48,9 @@ export default class TaskController {
 
     // Move task to another section
     async moveTask(req, res) {
-        const { taskId } = req.params;
-        const { newSection } = req.body;
-
+        const { taskId, sourceSectionId, destinationSectionId } = req.body;
         try {
-            const task = await TaskModel.moveTask(taskId, newSection);
+            const task = await TaskModel.moveTask(taskId, sourceSectionId, destinationSectionId);
             res.status(200).json({ message: "Task moved successfully", task });
         } catch (error) {
             res.status(500).json({ message: error.message });
