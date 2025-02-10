@@ -15,8 +15,18 @@ class SectionController {
     // Add new section
     async addSection(req, res) {
         try {
-            const { name } = req.body;
-            const newSection = new Section({ name, tasks: [] });
+            const { name, selectedSectionId } = req.body;
+
+            let creationDate = new Date();
+
+            if(selectedSectionId){
+                const selectedSection = await Section.findById(selectedSectionId);
+                if(selectedSection){
+                    creationDate = new Date(new Date(selectedSection.createdAt).getTime() + 5 * 60000);
+                }
+            }
+
+            const newSection = new Section({ name, tasks: [], createdAt: creationDate });
             await newSection.save();
             res.status(201).json(newSection);
         } catch (error) {
