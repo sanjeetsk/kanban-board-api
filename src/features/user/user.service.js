@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import User from "./user.model.js";
+import jwt from "jsonwebtoken";
 import { isValidImageURL, getDefaultAvatar } from "../utils/file.utils.js";
 
 class UserService {
@@ -50,13 +51,37 @@ class UserService {
 
     // Find user
     const user = await User.findOne({ email });
-    if (!user) throw new Error("Invalid credentials.");
+    if (!user) throw new Error("Email not found");
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error("Invalid credentials.");
+    if (!isMatch) throw new Error("Password is incorrect");
 
-    return user;
+    // Generate token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        userPhoto: user.userPhoto, // Include the userPhoto
+        email: user.email
+      }
+    };
+  }
+
+  static async getCount(){
+    try{
+      return await User.countDocuments();
+    }
+    catch(err){
+      throw new Error("Unable to find User count");
+    }
   }
 }
 

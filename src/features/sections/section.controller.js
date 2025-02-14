@@ -5,7 +5,13 @@ class SectionController {
     // Get all sections
     async getSections(req, res) {
         try {
-            const sections = await Section.find().populate('tasks');
+            const sections = await Section.find().populate({
+                path: "tasks",
+                populate: {
+                    path: "assignee",
+                    select: "userPhoto name", // Only get userPhoto & name
+                },
+            }).sort({ createdAt: 1 });
             res.status(200).json(sections);
         } catch (error) {
             res.status(500).json({ message: 'Error fetching sections', error });
@@ -16,13 +22,12 @@ class SectionController {
     async addSection(req, res) {
         try {
             const { name, selectedSectionId } = req.body;
-
             let creationDate = new Date();
 
             if(selectedSectionId){
                 const selectedSection = await Section.findById(selectedSectionId);
                 if(selectedSection){
-                    creationDate = new Date(new Date(selectedSection.createdAt).getTime() + 5 * 60000);
+                    creationDate = new Date(new Date(selectedSection.createdAt).getTime() + 1000);
                 }
             }
 

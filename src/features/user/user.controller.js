@@ -15,18 +15,25 @@ export default class UserController {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await UserService.login(email, password);
+      const result = await UserService.login(email, password);
 
-      if (!user) {
+      if (!result) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Create token
-      const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-      res.status(200).json({ token });
+      res.status(200).json(result);
     } catch (err) {
-      res.status(400).json({ message: "Error in login" });
+      res.status(400).json({ message: err.message });
+    }
+  }
+
+  async getCount(req, res){
+    try{
+      const totalUsers = await UserService.getCount();
+      res.status(200).json({ totalUsers });
+    }
+    catch(err){
+      res.status(400).json({ message: err.message});
     }
   }
 }
