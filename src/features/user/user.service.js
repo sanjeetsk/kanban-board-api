@@ -75,12 +75,27 @@ class UserService {
     };
   }
 
-  static async getCount(){
-    try{
+  static async getCount() {
+    try {
       return await User.countDocuments();
     }
-    catch(err){
+    catch (err) {
       throw new Error("Unable to find User count");
+    }
+  }
+
+  static async findById(id) {
+    try {
+      const user = await User.findById(id);
+
+      if (!user) {
+        return null; // Return null instead of throwing an error
+      }
+
+      return user;
+    }
+    catch (err) {
+      throw new Error("Database error");
     }
   }
 }

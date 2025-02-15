@@ -7,7 +7,6 @@ export default class TaskController {
         const { section } = req.params;
         try {
             const tasks = await TaskModel.getTasksBySection(section).populate("assignee", "userPhoto name");
-            console.log(tasks);
             res.status(200).json(tasks);
         } catch (error) {
             res.status(500).json({ message: error.message });
@@ -17,20 +16,23 @@ export default class TaskController {
     // Add a new task
     async addTask(req, res) {
         const { name, description, dueDate, assignee, section } = req.body;
-    
+
         try {
             const task = await TaskModel.addTask({ name, description, dueDate, assignee, section });
-    
+
+            // Populate assignee details (name & userPhoto) before returning
+            const populatedTask = await task.populate("assignee", "name userPhoto");
+
             if (!task) {
                 return res.status(400).json({ message: "Failed to add task" });
             }
-    
-            res.status(201).json({ message: "Task added successfully", task });
+
+            res.status(201).json({ message: "Task added successfully", task: populatedTask });
         } catch (err) {
             res.status(400).json({ message: err.message });
         }
     }
-    
+
 
     // Update a task
     async updateTask(req, res) {
