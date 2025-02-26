@@ -24,7 +24,7 @@ export default class TaskController {
                 return res.status(400).json({ message: "Failed to add task" });
             }
 
-            res.status(201).json({ message: "Task added successfully"});
+            res.status(201).json({ message: "Task added successfully", task });
         } catch (err) {
             res.status(400).json({ message: err.message });
         }
