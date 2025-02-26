@@ -1,13 +1,12 @@
 
 import mongoose from 'mongoose';
 import Section from '../sections/section.model.js';
-import User from '../user/user.model.js';
 
 const taskSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     dueDate: { type: Date, required: true },
-    assignee: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    assignee: { type: String, required: true },  // Changed to string
     section: { type: mongoose.Schema.Types.ObjectId, ref: 'Section', required: true }
 }, { timestamps: true });
 
@@ -22,10 +21,8 @@ export default class TaskModel {
             if (!sectionDoc) {
                 throw new Error("Section does not exist");
             }
-            // If no valid user, set assignee to null
-            const assigneeId = mongoose.Types.ObjectId.isValid(assignee) ? new mongoose.Types.ObjectId(assignee) : null;
 
-            const newTask = new Task({ name, description, dueDate, assignee: assigneeId, section: sectionDoc._id });
+            const newTask = new Task({ name, description, dueDate, assignee: assignee.trim(), section: sectionDoc._id });
 
             // Add the new task to the corresponding section
             sectionDoc.tasks.push(newTask._id);
@@ -43,7 +40,13 @@ export default class TaskModel {
     }
 
     static async updateTask(id, updatedTask) {
-        return await Task.findByIdAndUpdate(id, updatedTask, { new: true });
+        try {
+            const task = await Task.findByIdAndUpdate(id, updatedTask, { new: true });
+            if (!task) throw new Error("Task not found");
+            return task;
+        } catch (error) {
+            throw new Error(error.message);
+        }
     }
 
     static async deleteTask(id) {
@@ -60,7 +63,7 @@ export default class TaskModel {
             }
     
             // 2. Find the task
-            const task = await Task.findById(taskId).populate("assignee", "name userPhoto").exec(); // Ensure `assignee` details are included
+            const task = await Task.findById(taskId);
             if (!task) {
                 throw new Error('Task not found');
             }
@@ -78,7 +81,7 @@ export default class TaskModel {
             await destinationSection.save();
     
             // 6. Return the updated task with populated data
-            return await Task.findById(taskId).populate("section").populate("assignee", "name userPhoto");
+            return await Task.findById(taskId).populate("section");
         } catch (err) {
             throw new Error(err.message);
         }

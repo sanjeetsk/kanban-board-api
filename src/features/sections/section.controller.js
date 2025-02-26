@@ -5,13 +5,7 @@ class SectionController {
     // Get all sections
     async getSections(req, res) {
         try {
-            const sections = await Section.find().populate({
-                path: "tasks",
-                populate: {
-                    path: "assignee",
-                    select: "userPhoto name", // Only get userPhoto & name
-                },
-            }).sort({ createdAt: 1 });
+            const sections = await Section.find().populate('tasks').sort({ createdAt: 1 });
             res.status(200).json(sections);
         } catch (error) {
             res.status(500).json({ message: 'Error fetching sections', error });
